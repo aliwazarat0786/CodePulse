@@ -1,7 +1,7 @@
 # CODEPULSE-AI
 > Multi-Language AI-Powered Code Quality, Security & Complexity Analyzer
 
-CodePulse AI is an intelligent source code inspection platform combining traditional static analysis with an LLM interpretation layer. It detects code quality issues, security vulnerabilities, and complexity across 5 major programming languages.
+CodePulse AI is an intelligent llm powered source code inspection platform combining traditional static analysis with an LLM interpretation layer. It detects code quality issues, security vulnerabilities, and complexity across 5 major programming languages.
 
 ## Key Features
 - Multi-Language Pipeline: Python, Java, C, C++, JavaScript

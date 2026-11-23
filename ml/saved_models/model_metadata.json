@@ -1,0 +1,38 @@
+{
+  "model_type": "RandomForestClassifier + MultiModal Structural Features",
+  "training_accuracy": 1.0,
+  "f1_score": 1.0,
+  "cv_accuracy_mean": 0.9639,
+  "classes": [
+    "CLEAN_CODE",
+    "SECURITY_VULNERABILITY"
+  ],
+  "num_samples": 56,
+  "classification_report": {
+    "CLEAN_CODE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 8.0
+    },
+    "SECURITY_VULNERABILITY": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 48.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 56.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 56.0
+    }
+  }
+}

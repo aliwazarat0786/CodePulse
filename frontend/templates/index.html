@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePulse AI — Code Quality, Execution & Security Intelligence</title>
+    <!-- Modern Typography: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="app-body">
+    <!-- Subtle Ambient Background Grid -->
+    <div class="ambient-grid"></div>
+
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <header class="navbar">
+            <div class="nav-brand">
+                <div class="brand-symbol">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                </div>
+                <span class="brand-name">CodePulse <span class="brand-tag">AI</span></span>
+            </div>
+
+            <div class="nav-meta">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Engine Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-header">
+            <div class="hero-pill">Static Analysis &bull; Dynamic Execution &bull; AI Fixation &bull; Real Verification</div>
+            <h1 class="hero-title">Automated Code Quality, Execution &amp; Repair</h1>
+            <p class="hero-subtitle">
+                Inspect and execute Python, JavaScript, SQL, Java, C, and C++ with exact error diagnosis, verified AI fixes, and before/after comparison reports.
+            </p>
+        </section>
+
+        <!-- Workspace Quick Mode Navigation -->
+        <nav class="workspace-nav-bar" id="workspace-nav">
+            <button class="w-nav-tab active" id="wnav-editor" onclick="app.showWorkspaceTab('editor')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                Code Editor &amp; Runner
+            </button>
+            <button class="w-nav-tab" id="wnav-report" onclick="app.showWorkspaceTab('report')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                AI Audit Report
+            </button>
+            <button class="w-nav-tab hidden" id="wnav-fix" onclick="app.showWorkspaceTab('fix')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                AI Fix &amp; Verification
+            </button>
+            <button class="w-nav-tab hidden" id="wnav-comp" onclick="app.showWorkspaceTab('comp')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                Before vs After Comparison
+            </button>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <!-- Code Input Panel -->
+            <div class="card editor-card" id="input-card">
+                <!-- Version Banner when fix applied -->
+                <div class="editor-version-banner hidden" id="editor-version-banner">
+                    <div class="banner-left">
+                        <span class="badge-v2">v2 (AI Fixed)</span>
+                        <span class="banner-text">Candidate AI fix has been applied to this editor.</span>
+                    </div>
+                    <div class="banner-actions">
+                        <button class="btn-banner-primary" onclick="app.reanalyzeAppliedCode()">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                            Re-Analyze &amp; Compare
+                        </button>
+                        <button class="btn-banner-sec" onclick="app.executeCode()">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Run Code
+                        </button>
+                        <button class="btn-banner-revert" onclick="app.revertToOriginal()">
+                            ↺ Revert to v1
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-toolbar">
+                    <div class="segment-tabs">
+                        <button class="tab-item active" id="tab-paste" onclick="app.switchTab('paste')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            Paste Code
+                        </button>
+                        <button class="tab-item" id="tab-upload" onclick="app.switchTab('upload')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            Upload File
+                        </button>
+                    </div>
+
+                    <div class="toolbar-controls">
+                        <!-- Quick Sample Loader -->
+                        <div class="select-container">
+                            <select id="sample-select" onchange="app.loadSample(this.value)">
+                                <option value="" disabled selected>Load Demonstration Code</option>
+                                <option value="python">Python (Syntax Error &amp; ZeroDivision)</option>
+                                <option value="sql">SQL / PostgreSQL (Dynamic SQL &amp; DDL)</option>
+                                <option value="react">React.js (XSS &amp; Dangerous HTML)</option>
+                                <option value="node_mongo">Node.js + MongoDB (NoSQL Injection)</option>
+                                <option value="django_flask">Django &amp; Flask (SSTI &amp; Raw SQL)</option>
+                                <option value="javascript">JavaScript (Eval &amp; Scope)</option>
+                                <option value="java">Java (Exceptions &amp; PMD)</option>
+                                <option value="c">C (Buffer Overflows &amp; Leaks)</option>
+                                <option value="cpp">C++ (Pointers &amp; Casting)</option>
+                            </select>
+                        </div>
+
+                        <!-- Language Selector -->
+                        <div class="select-container">
+                            <select id="language-select" onchange="app.onLanguageChange(this.value)">
+                                <option value="auto">Auto Detect Language</option>
+                                <option value="python">Python (Django / Flask / FastAPI)</option>
+                                <option value="javascript">JavaScript (React / Node / Mongo)</option>
+                                <option value="sql">SQL (PostgreSQL / MySQL / SQLite)</option>
+                                <option value="java">Java (Spring / Enterprise)</option>
+                                <option value="c">C (Systems / Memory)</option>
+                                <option value="cpp">C++ (Modern RAII)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paste Workspace -->
+                <div class="code-workspace" id="paste-area">
+                    <div class="workspace-header">
+                        <div class="header-file-tags">
+                            <span class="filename-badge" id="current-filename-tag">snippet.py</span>
+                            <span class="detected-lang-pill" id="live-lang-tag">Detecting...</span>
+                            <span class="version-tag hidden" id="code-version-tag">v1 (Original)</span>
+                        </div>
+                        <div class="meta-counter">
+                            <span id="char-count">0 characters</span> &bull; <span id="line-count">1 line</span>
+                        </div>
+                    </div>
+                    <div class="editor-body">
+                        <div class="line-gutter" id="line-numbers">1</div>
+                        <textarea id="code-input" class="editor-textarea" placeholder="// Type or paste source code here, or choose a demonstration snippet above..." spellcheck="false"></textarea>
+                    </div>
+                </div>
+
+                <!-- Upload Dropzone -->
+                <div class="upload-container hidden" id="upload-area">
+                    <div class="dropzone-box">
+                        <div class="dropzone-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        </div>
+                        <h3 class="dropzone-title">Upload a source file to analyze</h3>
+                        <p class="dropzone-hint">Supports .py, .js, .jsx, .ts, .tsx, .sql, .pgsql, .java, .c, .cpp (Max 1MB)</p>
+                        <label class="btn-select-file">
+                            <span>Browse File</span>
+                            <input type="file" id="file-upload-input" style="display: none;" onchange="app.handleFileUpload(event)">
+                        </label>
+                        <div id="upload-status" class="upload-status-msg"></div>
+                    </div>
+                </div>
+
+                <!-- Card Footer Actions: 3 Primary Actions -->
+                <div class="card-action-bar">
+                    <div class="ai-checkbox-group">
+                        <label class="clean-switch">
+                            <input type="checkbox" id="ai-toggle" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="switch-text">Enable AI Explanations &amp; Fixes</span>
+                    </div>
+
+                    <div class="action-buttons-group">
+                        <button class="btn-secondary-action" id="btn-run-code" onclick="app.executeCode()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Run Code
+                        </button>
+                        <button class="btn-secondary-action" id="btn-analyze-only" onclick="app.startAnalysis(false)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            Analyze
+                        </button>
+                        <button class="btn-analyze" id="btn-analyze" onclick="app.startAnalysis(true)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            Analyze + Run
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Execution Output Terminal Card -->
+            <div class="card execution-card hidden" id="execution-card">
+                <div class="execution-header">
+                    <div class="exec-title-group">
+                        <div class="terminal-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <span class="exec-heading">Execution Terminal Output</span>
+                    </div>
+                    <div class="exec-badges-group">
+                        <span class="status-badge" id="exec-status-badge">SUCCESS</span>
+                        <span class="meta-pill" id="exec-time-badge">0.02s</span>
+                        <span class="meta-pill" id="exec-code-badge">Exit: 0</span>
+                    </div>
+                </div>
+
+                <div class="execution-body">
+                    <!-- Standard Output Block -->
+                    <div class="terminal-block">
+                        <div class="terminal-block-label">STDOUT:</div>
+                        <pre class="terminal-pre" id="exec-stdout-content"><code>// Output will appear here...</code></pre>
+                    </div>
+
+                    <!-- Standard Error / Traceback Block -->
+                    <div class="terminal-block hidden" id="exec-stderr-block">
+                        <div class="terminal-block-label error-label">STDERR / TRACEBACK:</div>
+                        <pre class="terminal-pre error-pre" id="exec-stderr-content"><code></code></pre>
+                    </div>
+
+                    <!-- Compilation Output Block -->
+                    <div class="terminal-block hidden" id="exec-compile-block">
+                        <div class="terminal-block-label warning-label">COMPILATION DIAGNOSTIC:</div>
+                        <pre class="terminal-pre warning-pre" id="exec-compile-content"><code></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Progression State -->
+            <div class="card loading-card hidden" id="loading-card">
+                <div class="loading-spinner-ring"></div>
+                <h3 class="loading-heading">Running Engineering Pipeline</h3>
+                <p class="loading-subheading" id="loading-step-text">Initializing Abstract Syntax Tree parser...</p>
+                
+                <div class="progress-steps-list">
+                    <div class="step-row" id="step-1">
+                        <span class="step-check">✓</span>
+                        <span class="step-desc">1. Language Identification &amp; Syntax Validation</span>
+                    </div>
+                    <div class="step-row" id="step-2">
+                        <span class="step-check">✓</span>
+                        <span class="step-desc">2. Multi-Engine Static Analysis &amp; Heuristics</span>
+                    </div>
+                    <div class="step-row" id="step-3">
+                        <span class="step-check">✓</span>
+                        <span class="step-desc">3. Sandboxed Compilation &amp; Dynamic Execution</span>
+                    </div>
+                    <div class="step-row" id="step-4">
+                        <span class="step-check">✓</span>
+                        <span class="step-desc">4. Complexity Metrics &amp; Quality Scoring</span>
+                    </div>
+                    <div class="step-row" id="step-5">
+                        <span class="step-check">✓</span>
+                        <span class="step-desc">5. Machine Learning &amp; AI Recommendation Engine</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-layout hidden" id="results-container">
+                <!-- Top Summary Metrics Grid -->
+                <div class="metrics-row">
+                    <!-- Quality Score Card -->
+                    <div class="card score-panel">
+                        <div class="panel-tag">CODE QUALITY SCORE</div>
+                        <div class="score-donut-box">
+                            <svg class="donut-svg" viewBox="0 0 120 120">
+                                <circle class="donut-bg" cx="60" cy="60" r="48"></circle>
+                                <circle class="donut-val" id="score-circle-bar" cx="60" cy="60" r="48"></circle>
+                            </svg>
+                            <div class="donut-content">
+                                <div class="score-digit" id="score-val">0</div>
+                                <div class="score-base">/ 100</div>
+                            </div>
+                        </div>
+                        <div class="grade-pill" id="grade-pill">GRADE A</div>
+                        <div class="verdict-summary" id="verdict-text">Clean Code Quality</div>
+                    </div>
+
+                    <!-- Telemetry Stats -->
+                    <div class="card telemetry-panel">
+                        <div class="panel-tag">PROJECT METRICS</div>
+                        <div class="telemetry-grid-4">
+                            <div class="stat-unit">
+                                <span class="stat-unit-label">Lines of Code</span>
+                                <span class="stat-unit-val" id="stat-loc">0</span>
+                            </div>
+                            <div class="stat-unit">
+                                <span class="stat-unit-label">Cyclomatic Complexity</span>
+                                <span class="stat-unit-val" id="stat-cc">1.0</span>
+                            </div>
+                            <div class="stat-unit">
+                                <span class="stat-unit-label">Maintainability Index</span>
+                                <span class="stat-unit-val" id="stat-mi">85.0</span>
+                            </div>
+                            <div class="stat-unit">
+                                <span class="stat-unit-label">Total Findings</span>
+                                <span class="stat-unit-val stat-val-findings" id="stat-total-issues">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Severity Distribution -->
+                    <div class="card distribution-panel">
+                        <div class="panel-tag">SEVERITY BREAKDOWN</div>
+                        <div class="distribution-list">
+                            <div class="dist-row">
+                                <span class="dist-name name-critical">Critical</span>
+                                <div class="dist-track"><div class="dist-fill fill-critical" id="bar-critical" style="width: 0%;"></div></div>
+                                <span class="dist-count" id="count-critical">0</span>
+                            </div>
+                            <div class="dist-row">
+                                <span class="dist-name name-high">High</span>
+                                <div class="dist-track"><div class="dist-fill fill-high" id="bar-high" style="width: 0%;"></div></div>
+                                <span class="dist-count" id="count-high">0</span>
+                            </div>
+                            <div class="dist-row">
+                                <span class="dist-name name-medium">Medium</span>
+                                <div class="dist-track"><div class="dist-fill fill-medium" id="bar-medium" style="width: 0%;"></div></div>
+                                <span class="dist-count" id="count-medium">0</span>
+                            </div>
+                            <div class="dist-row">
+                                <span class="dist-name name-low">Low</span>
+                                <div class="dist-track"><div class="dist-fill fill-low" id="bar-low" style="width: 0%;"></div></div>
+                                <span class="dist-count" id="count-low">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Machine Learning Classifier Telemetry Card -->
+                <div class="card ml-card" id="ml-prediction-panel">
+                    <div class="card-meta-header">
+                        <div class="header-left">
+                            <span class="badge-blue">ML Model Classification</span>
+                            <span class="model-algorithm" id="ml-model-badge">Random Forest Classifier (CWE Trained)</span>
+                        </div>
+                        <div class="header-right">
+                            <span class="risk-metric-label">Vulnerability Risk Score:</span>
+                            <span class="risk-metric-val" id="ml-risk-pct">0%</span>
+                        </div>
+                    </div>
+                    <div class="ml-body">
+                        <div class="ml-profile-box">
+                            <span class="profile-label">Predicted Code Pattern:</span>
+                            <span class="profile-value" id="ml-predicted-label">CLEAN_CODE</span>
+                        </div>
+                        <div class="risk-bar-container">
+                            <div class="risk-bar-fill" id="ml-risk-bar" style="width: 10%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Architecture & Purpose Card -->
+                <div class="card purpose-card" id="code-purpose-panel">
+                    <div class="purpose-header">
+                        <div class="purpose-title-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                            <div>
+                                <h4 class="purpose-heading" id="code-purpose-title">Code Purpose &amp; Domain Architecture</h4>
+                                <div class="purpose-sub" id="code-domain-runtime">Domain: Software Architecture &bull; Target Runtime: Standard Environment</div>
+                            </div>
+                        </div>
+                        <div class="purpose-badges">
+                            <span class="badge-lang-tag" id="code-detected-lang-badge">PYTHON</span>
+                            <span class="engine-badge">Inferred Intent</span>
+                        </div>
+                    </div>
+                    <p class="purpose-desc-text" id="code-purpose-desc">
+                        Analyzing module intent, structural components, and runtime domain...
+                    </p>
+                    <div class="capabilities-row" id="code-capabilities-box">
+                        <span class="capabilities-label">Identified Capabilities:</span>
+                        <div class="capabilities-tags" id="code-capabilities-list">
+                            <span class="cap-tag">Algorithm Execution</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actionable Remediation & Refactoring Roadmap Card -->
+                <div class="card roadmap-card" id="refactoring-roadmap-panel">
+                    <div class="roadmap-header">
+                        <div class="roadmap-title-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <div>
+                                <h4 class="roadmap-heading">Actionable Remediation &amp; Refactoring Roadmap</h4>
+                                <div class="roadmap-sub" id="roadmap-diagnostic-sub">Diagnostic: Code health review &amp; step-by-step guidance</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-pills">
+                            <span class="urgency-pill" id="roadmap-urgency-badge">MODERATE</span>
+                            <span class="score-recovery-pill" id="roadmap-score-gain">Target: 100/100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-diagnostic-box">
+                        <span class="diag-label">Health Diagnostic:</span>
+                        <p class="diag-text" id="roadmap-diagnostic-text">
+                            Evaluating score drivers and defect locations...
+                        </p>
+                    </div>
+
+                    <!-- Step-by-step guidance list -->
+                    <div class="roadmap-steps-container">
+                        <div class="steps-heading">Prioritized Changes &amp; Problem Locations:</div>
+                        <div class="steps-list" id="roadmap-steps-list">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Executive Summary Card -->
+                <div class="card ai-eval-card" id="ai-summary-panel">
+                    <div class="ai-eval-header">
+                        <div class="ai-title-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                            <span class="ai-title">Executive AI Assessment</span>
+                        </div>
+                        <span class="engine-badge" id="ai-engine-tag">Neural Reasoning Engine</span>
+                    </div>
+                    <p class="ai-text" id="ai-exec-summary">
+                        Analysis complete. Review prioritized vulnerabilities and refactoring recommendations below.
+                    </p>
+                </div>
+
+                <!-- INTERACTIVE AI REPORT & ISSUE SELECTION SECTION -->
+                <div class="findings-wrapper">
+                    <div class="findings-topbar">
+                        <div class="findings-heading-group">
+                            <h3 class="findings-heading">Detected Findings</h3>
+                            <span class="findings-pill" id="findings-count-tag">0 issues</span>
+                        </div>
+
+                        <!-- Filter Chips -->
+                        <div class="filter-group">
+                            <button class="filter-btn active" onclick="app.filterIssues('ALL')">All</button>
+                            <button class="filter-btn btn-f-critical" onclick="app.filterIssues('CRITICAL')">Critical</button>
+                            <button class="filter-btn btn-f-high" onclick="app.filterIssues('HIGH')">High</button>
+                            <button class="filter-btn btn-f-medium" onclick="app.filterIssues('MEDIUM')">Medium</button>
+                            <button class="filter-btn btn-f-low" onclick="app.filterIssues('LOW')">Low</button>
+                            <button class="filter-btn btn-f-security" onclick="app.filterIssues('security')">Security</button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Issue Selection Toolbar -->
+                    <div class="card issue-select-toolbar">
+                        <div class="select-tools-left">
+                            <button class="btn-tool-sm" onclick="app.selectAllIssues()">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Select All
+                            </button>
+                            <button class="btn-tool-sm" onclick="app.deselectAllIssues()">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                Deselect All
+                            </button>
+                            <span class="selected-count-badge" id="selected-count-tag">0 selected</span>
+                        </div>
+
+                        <div class="select-tools-right">
+                            <button class="btn-fix-action" id="btn-fix-selected" onclick="app.fixSelectedIssues()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Fix Selected Using AI
+                            </button>
+                            <button class="btn-fix-all-action" id="btn-fix-all" onclick="app.fixAllIssues()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"></path></svg>
+                                Fix All Using AI
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Issues List Container -->
+                    <div class="findings-list" id="issues-list-container">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- AI FIX PREVIEW & REAL VERIFICATION SECTION -->
+                <div class="card ai-fix-card hidden" id="ai-fix-preview-card">
+                    <div class="ai-fix-header">
+                        <div class="fix-title-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <div>
+                                <h3 class="fix-heading">AI Fix Candidate Preview &amp; Real Verification</h3>
+                                <div class="fix-sub" id="fix-verification-sub">Candidate code verified with backend compiler and execution engine.</div>
+                            </div>
+                        </div>
+                        <div class="fix-header-badges">
+                            <span class="verification-pill" id="verification-status-pill">VERIFIED</span>
+                        </div>
+                    </div>
+
+                    <!-- Verification Diagnostics Banner -->
+                    <div class="verification-banner" id="verification-banner-box">
+                        <div class="verif-summary-text" id="verification-summary-text">
+                            Fix successfully validated. Syntax is clean and program runs without errors.
+                        </div>
+                    </div>
+
+                    <!-- Step-by-Step AI Fix Explanations -->
+                    <div class="fix-explanations-box" id="fix-explanations-list">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Side-by-Side Code Diff Viewer -->
+                    <div class="diff-viewer-wrapper">
+                        <div class="diff-header-row">
+                            <div class="diff-header-col">
+                                <span class="diff-col-title">ORIGINAL CODE</span>
+                                <span class="diff-col-tag original-tag">Base Version (v1)</span>
+                            </div>
+                            <div class="diff-header-col">
+                                <span class="diff-col-title">AI FIXED CODE</span>
+                                <span class="diff-col-tag fixed-tag">Candidate Version (v2)</span>
+                            </div>
+                        </div>
+
+                        <div class="diff-body-container" id="diff-body-grid">
+                            <!-- Side-by-side rows generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Fixed Code Execution Comparison Modal / Area -->
+                    <div class="fixed-exec-box hidden" id="fixed-exec-box">
+                        <div class="fixed-exec-header">
+                            <strong>Fixed Code Execution Output:</strong>
+                            <span class="exec-status-pill" id="fixed-exec-status">SUCCESS</span>
+                        </div>
+                        <pre class="terminal-pre" id="fixed-exec-stdout"><code></code></pre>
+                    </div>
+
+                    <!-- Action Controls: Direct 1-Click Apply & Auto-Reanalyze -->
+                    <div class="fix-action-bar">
+                        <div class="fix-action-left">
+                            <button class="btn-discard" onclick="app.discardFix()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                Discard Candidate Fix
+                            </button>
+                        </div>
+                        <div class="fix-action-right">
+                            <button class="btn-run-fixed" onclick="app.runFixedCode()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                Run Fixed Code
+                            </button>
+                            <button class="btn-secondary-action" onclick="app.applyFixedCode()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Apply to Editor Only
+                            </button>
+                            <button class="btn-apply-code" onclick="app.applyAndAutoReanalyze()">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                ⚡ Apply &amp; Auto Re-Analyze
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RE-ANALYSIS & REPORT COMPARISON DASHBOARD -->
+                <div class="card comparison-card hidden" id="comparison-dashboard-card">
+                    <div class="comp-header">
+                        <div class="comp-title-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                            <div>
+                                <h3 class="comp-heading">Fix Verification &amp; Report Comparison</h3>
+                                <div class="comp-sub" id="comp-timestamp-tag">Deterministic delta between Original and AI-Fixed code.</div>
+                            </div>
+                        </div>
+                        <div class="comp-score-delta-pill" id="comp-score-delta">+27 Points Gain</div>
+                    </div>
+
+                    <!-- Score Comparison 3-Grid Banner -->
+                    <div class="comp-score-banner">
+                        <div class="comp-score-col">
+                            <span class="comp-score-lbl">BEFORE (ORIGINAL)</span>
+                            <div class="comp-score-digit" id="comp-score-before">64</div>
+                            <span class="comp-score-grade" id="comp-grade-before">Grade D</span>
+                        </div>
+                        <div class="comp-score-col comp-col-arrow">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                        <div class="comp-score-col comp-score-col-after">
+                            <span class="comp-score-lbl">AFTER (AI FIXED)</span>
+                            <div class="comp-score-digit val-green" id="comp-score-after">91</div>
+                            <span class="comp-score-grade val-green" id="comp-grade-after">Grade A</span>
+                        </div>
+                    </div>
+
+                    <!-- 3-Category Breakdown Grid: Resolved, Remaining, New -->
+                    <div class="comp-breakdown-grid">
+                        <!-- Resolved Issues Card -->
+                        <div class="comp-issues-box box-resolved">
+                            <div class="box-head">
+                                <span class="box-title">✅ Resolved Issues</span>
+                                <span class="box-count count-green" id="comp-resolved-count">0</span>
+                            </div>
+                            <ul class="comp-issues-ul" id="comp-resolved-list">
+                                <!-- Populated by JS -->
+                            </ul>
+                        </div>
+
+                        <!-- Remaining Issues Card -->
+                        <div class="comp-issues-box box-remaining">
+                            <div class="box-head">
+                                <span class="box-title">⚠️ Remaining Issues</span>
+                                <span class="box-count count-yellow" id="comp-remaining-count">0</span>
+                            </div>
+                            <ul class="comp-issues-ul" id="comp-remaining-list">
+                                <!-- Populated by JS -->
+                            </ul>
+                        </div>
+
+                        <!-- Newly Introduced Issues Card -->
+                        <div class="comp-issues-box box-new">
+                            <div class="box-head">
+                                <span class="box-title">🚨 Newly Introduced Issues</span>
+                                <span class="box-count count-red" id="comp-new-count">0</span>
+                            </div>
+                            <ul class="comp-issues-ul" id="comp-new-list">
+                                <!-- Populated by JS -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Delta Table -->
+                    <div class="comp-metrics-table-wrap">
+                        <div class="table-heading">Metrics Delta Telemetry:</div>
+                        <table class="comp-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th style="text-align:center;">Before</th>
+                                    <th style="text-align:center;">After</th>
+                                    <th style="text-align:center;">Change</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comp-metrics-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Comparison Download Action Bar: Comprehensive 4-Download Suite -->
+                    <div class="comp-download-suite">
+                        <div class="download-suite-heading">📥 Export &amp; Download Audit Reports:</div>
+                        <div class="download-suite-grid">
+                            <button class="btn-suite-download" onclick="app.downloadOriginalReport('html')">
+                                <div class="suite-icon">📄</div>
+                                <div class="suite-meta">
+                                    <span class="suite-name">Original Report</span>
+                                    <span class="suite-sub">v1 Baseline Audit (.html / .pdf)</span>
+                                </div>
+                            </button>
+
+                            <button class="btn-suite-download" onclick="app.downloadFixedReport('html')">
+                                <div class="suite-icon">✨</div>
+                                <div class="suite-meta">
+                                    <span class="suite-name">Fixed Code Report</span>
+                                    <span class="suite-sub">v2 Verified Audit (.html / .pdf)</span>
+                                </div>
+                            </button>
+
+                            <button class="btn-suite-download" onclick="app.downloadComparisonReport('html')">
+                                <div class="suite-icon">⚖️</div>
+                                <div class="suite-meta">
+                                    <span class="suite-name">Comparison Report</span>
+                                    <span class="suite-sub">Before vs After Delta (.html / .pdf)</span>
+                                </div>
+                            </button>
+
+                            <button class="btn-suite-download btn-suite-zip" onclick="app.downloadAllReportsPackage()">
+                                <div class="suite-icon">📦</div>
+                                <div class="suite-meta">
+                                    <span class="suite-name">Download All Package (.ZIP)</span>
+                                    <span class="suite-sub">All Reports + v1/v2 Source Files</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Export & Share Action Bar -->
+                <div class="card footer-action-bar">
+                    <div class="footer-btn-group">
+                        <button class="btn-share-trigger" onclick="app.openShareModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            Share &amp; Export Report
+                        </button>
+                        <button class="btn-primary-action" onclick="app.reanalyzeAppliedCode()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                            Re-analyze Code
+                        </button>
+                        <button class="btn-secondary-action" onclick="app.showWorkspaceTab('editor')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                            Back to Editor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-info">
+                <span>CodePulse AI &bull; Multi-Language Static &amp; Dynamic Code Intelligence</span>
+                <span class="footer-sub">Heuristic Static Analysis + Sandboxed Execution + Random Forest ML + Neural LLM Fixation</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Share & Export Modal Dialog -->
+    <div class="modal-overlay hidden" id="share-export-modal" onclick="app.handleModalOverlayClick(event)">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    <h3 class="modal-title">Share &amp; Export Audit Report</h3>
+                </div>
+                <button class="btn-close-modal" onclick="app.closeShareModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Section 1: Shareable Web Link -->
+                <div class="modal-section">
+                    <label class="modal-section-label">1. Shareable Web Report Link</label>
+                    <div class="share-link-box">
+                        <input type="text" id="share-link-input" class="share-link-field" readonly value="http://localhost:5000/api/report/demo?format=html">
+                        <button class="btn-copy-link" onclick="app.copyShareLink()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            Copy Link
+                        </button>
+                        <button class="btn-open-link" onclick="app.openShareLink()">Open</button>
+                    </div>
+                </div>
+
+                <!-- Section 2: Choose File Format -->
+                <div class="modal-section">
+                    <label class="modal-section-label">2. Select Export File Format</label>
+                    <div class="export-format-grid">
+                        <div class="format-card active" data-format="pdf" onclick="app.selectExportFormat('pdf')">
+                            <div class="format-icon">📄</div>
+                            <div class="format-meta">
+                                <span class="format-name">PDF Document</span>
+                                <span class="format-ext">.pdf (Print Ready)</span>
+                            </div>
+                        </div>
+
+                        <div class="format-card" data-format="doc" onclick="app.selectExportFormat('doc')">
+                            <div class="format-icon">📝</div>
+                            <div class="format-meta">
+                                <span class="format-name">Word Document</span>
+                                <span class="format-ext">.doc (MS Word / Docs)</span>
+                            </div>
+                        </div>
+
+                        <div class="format-card" data-format="html" onclick="app.selectExportFormat('html')">
+                            <div class="format-icon">🌐</div>
+                            <div class="format-meta">
+                                <span class="format-name">HTML Web Page</span>
+                                <span class="format-ext">.html (Standalone)</span>
+                            </div>
+                        </div>
+
+                        <div class="format-card" data-format="json" onclick="app.selectExportFormat('json')">
+                            <div class="format-icon">💾</div>
+                            <div class="format-meta">
+                                <span class="format-name">JSON Telemetry</span>
+                                <span class="format-ext">.json (Raw Data)</span>
+                            </div>
+                        </div>
+
+                        <div class="format-card" data-format="md" onclick="app.selectExportFormat('md')">
+                            <div class="format-icon">📋</div>
+                            <div class="format-meta">
+                                <span class="format-name">Markdown Text</span>
+                                <span class="format-ext">.md (GitHub / PRs)</span>
+                            </div>
+                        </div>
+
+                        <div class="format-card" data-format="zip" onclick="app.selectExportFormat('zip')">
+                            <div class="format-icon">📦</div>
+                            <div class="format-meta">
+                                <span class="format-name">Complete ZIP Package</span>
+                                <span class="format-ext">.zip (All Reports &amp; Code)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Save Details & Target Location -->
+                <div class="modal-section">
+                    <div class="save-location-info">
+                        <div class="info-item">
+                            <span class="info-label">File Name:</span>
+                            <span class="info-val font-mono" id="modal-filename-preview">CodePulse_Report_85570faf.pdf</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Save Location on PC:</span>
+                            <span class="info-val">Downloads folder (or prompt location in your browser)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="app.closeShareModal()">Cancel</button>
+                <button class="btn-share-native" id="btn-native-share" onclick="app.nativeShare()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                    Share via...
+                </button>
+                <button class="btn-download-action" onclick="app.downloadSelectedFormat()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download File to PC
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-wrapper"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
